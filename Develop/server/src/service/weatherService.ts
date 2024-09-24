@@ -111,7 +111,7 @@ class WeatherService {
     for (let i = 1; i < response.list.length; i++) {
       fiveDayForecast.push(response.list[i]);
     }
-    return currentWeather;
+    return { currentWeather, fiveDayForecast };
     // return await this.buildForecastArray(currentWeather, fiveDayForecast);
   }
   // TODO: Complete buildForecastArray method
@@ -123,6 +123,7 @@ class WeatherService {
     console.log(fiveDayForecast);
     const forecast = [];
     forecast.push({
+      city: this.cityName,
       date: currentWeather.dt_txt,
       icon: currentWeather.weather[0].icon,
       iconDescription: currentWeather.weather[0].description,
@@ -130,7 +131,7 @@ class WeatherService {
       windSpeed: currentWeather.wind.speed,
       humidity: currentWeather.main.humidity,
     });
-    for (let i = 0; i < fiveDayForecast.length; i++) {
+    for (let i = 1; i < fiveDayForecast.length; i += 8) {
       forecast.push({
         date: fiveDayForecast[i].dt_txt,
         icon: fiveDayForecast[i].weather[0].icon,
@@ -149,10 +150,10 @@ class WeatherService {
     console.log(locationData);
     const coordinates = this.destructureLocationData(locationData);
     const weatherData = await this.fetchWeatherData(coordinates);
-    const currentWeather = this.parseCurrentWeather(weatherData);
+    const currentWeather = await this.parseCurrentWeather(weatherData);
     const forecast = await this.buildForecastArray(
-      currentWeather,
-      weatherData.list
+      currentWeather.currentWeather,
+      currentWeather.fiveDayForecast
     );
     console.log(forecast);
     return forecast;

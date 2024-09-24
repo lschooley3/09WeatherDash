@@ -1,4 +1,5 @@
 import fs from "fs/promises";
+import { v4 } from "uuid";
 // TODO: Define a City class with name and id properties
 class City {
   name: string;
@@ -14,6 +15,7 @@ class HistoryService {
   // TODO: Define a read method that reads from the searchHistory.json file
   private async read() {
     const data = await fs.readFile("./db/db.json", "utf8");
+    console.log(data);
     return JSON.parse(data);
   }
 
@@ -23,14 +25,7 @@ class HistoryService {
   }
   // TODO: Define a getCities method that reads the cities from the searchHistory.json file and returns them as an array of City objects
   async getCities() {
-    return await this.read().then((cities) => {
-      let cityArray: City[] = cities.map(
-        (city: { name: string; id: string }) => {
-          new City(city.name, city.id);
-        }
-      );
-      return cityArray;
-    });
+    return await this.read();
   }
   // TODO Define an addCity method that adds a city to the searchHistory.json file
   async addCity(newCity: string) {
@@ -38,7 +33,7 @@ class HistoryService {
       throw new Error("City name is required");
     }
     const cities = await this.read();
-    cities.push(newCity);
+    cities.push({ name: newCity, id: v4() });
     await this.write(cities);
     return cities;
   }
